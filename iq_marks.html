@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>iQ — Remote Marks Entry</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #060d1a;
+  --surface: #0b1627;
+  --card: #0f1e35;
+  --card2: #132542;
+  --border: #1a3050;
+  --border2: #1e3d63;
+  --accent: #2563eb;
+  --accent-glow: #2563eb44;
+  --accent2: #06b6d4;
+  --accent3: #10b981;
+  --text: #e2eaf6;
+  --sub: #6b8cad;
+  --sub2: #4a6b8a;
+  --red: #ef4444;
+  --orange: #f97316;
+  --yellow: #f59e0b;
+  --green: #10b981;
+  --radius: 12px;
+  --radius-sm: 8px;
+}
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Space Grotesk', sans-serif;
+  min-height: 100vh;
+  padding-bottom: 80px;
+  background-image: radial-gradient(ellipse 80% 50% at 50% -20%, #1a3a6622, transparent),
+                    radial-gradient(ellipse 60% 40% at 100% 80%, #06b6d411, transparent);
+}
+
+/* ── HEADER ──────────────────────────────────────────── */
+header {
+  background: rgba(6,13,26,0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  box-shadow: 0 1px 40px #00000066;
+}
+.logo-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #2563eb, #06b6d4);
+  border-radius: 8px;
+  padding: 5px 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 600;
+  font-size: 14px;
+  color: #fff;
+  letter-spacing: 1px;
+  box-shadow: 0 0 20px #2563eb44;
+}
+.logo-dot { width: 7px; height: 7px; background: #fff; border-radius: 50%; opacity: 0.8; }
+header .title { font-size: 14px; font-weight: 500; color: var(--sub); letter-spacing: 0.3px; }
+header .school-name { color: var(--text); font-weight: 600; font-size: 13px; }
+.header-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+.status-pill {
+  display: flex; align-items: center; gap: 6px;
+  background: #06b6d415;
+  border: 1px solid #06b6d433;
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent2);
+  letter-spacing: 0.5px;
+}
+.status-dot {
+  width: 6px; height: 6px;
+  background: var(--accent2);
+  border-radius: 50%;
+  animation: pulse-dot 2s ease infinite;
+}
+@keyframes pulse-dot {
+  0%,100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.8); }
+}
+
+/* ── SECTION TABS ─────────────────────────────────────── */
+.tabs-wrap {
+  padding: 20px 24px 0;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  position: sticky;
+  top: 60px;
+  z-index: 100;
+}
+.tabs {
+  display: flex;
+  gap: 2px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.tabs::-webkit-scrollbar { display: none; }
+.tab-btn {
+  background: transparent;
+  border: none;
+  color: var(--sub);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 12px 20px;
+  cursor: pointer;
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+  transition: color 0.2s, border-color 0.2s;
+  position: relative;
+  top: 1px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.tab-btn:hover { color: var(--text); }
+.tab-btn.active {
+  color: var(--accent2);
+  border-bottom-color: var(--accent2);
+  font-weight: 600;
+}
+.tab-icon { font-size: 15px; }
+
+/* ── MAIN CONTENT ─────────────────────────────────────── */
+.main { padding: 24px; max-width: 900px; }
+
+/* ── CARDS ────────────────────────────────────────────── */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px 22px;
+  margin-bottom: 16px;
+  position: relative;
+  overflow: hidden;
+  animation: card-in 0.3s ease both;
+}
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border2), transparent);
+}
+@keyframes card-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.card-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--sub);
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.card-title-icon {
+  width: 26px; height: 26px;
+  background: var(--accent-glow);
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px;
+}
+
+/* ── FORM FIELDS ──────────────────────────────────────── */
+.fields-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1.5fr;
+  gap: 12px;
+}
+@media (max-width: 600px) {
+  .fields-grid { grid-template-columns: 1fr 1fr; }
+}
+.field { display: flex; flex-direction: column; gap: 6px; }
+label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--sub2);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+select, input[type=text], input[type=number] {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  color: var(--text);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  outline: none;
+  width: 100%;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  -webkit-appearance: none;
+}
+select:focus, input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+select option { background: var(--card2); }
+
+/* ── SUBJECT CHIPS ────────────────────────────────────── */
+.chips-wrap { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.chip {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  color: var(--sub);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 7px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.18s;
+  letter-spacing: 0.2px;
+}
+.chip:hover { border-color: var(--accent2); color: var(--accent2); background: #06b6d411; }
+.chip.active {
+  background: linear-gradient(135deg, #06b6d422, #2563eb22);
+  border-color: var(--accent2);
+  color: var(--accent2);
+  box-shadow: 0 0 12px #06b6d422;
+}
+
+/* ── BUTTONS ──────────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 10px 20px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.15s;
+  letter-spacing: 0.2px;
+  box-shadow: 0 4px 12px #2563eb33;
+}
+.btn:hover { background: #1d4ed8; transform: translateY(-1px); box-shadow: 0 6px 16px #2563eb44; }
+.btn:active { transform: scale(0.98); }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+.btn-teal { background: var(--accent2); box-shadow: 0 4px 12px #06b6d433; }
+.btn-teal:hover { background: #0891b2; box-shadow: 0 6px 16px #06b6d444; }
+.btn-green { background: var(--green); box-shadow: 0 4px 12px #10b98133; }
+.btn-green:hover { background: #059669; box-shadow: 0 6px 16px #10b98144; }
+.btn-ghost {
+  background: transparent;
+  color: var(--sub);
+  border: 1px solid var(--border2);
+  box-shadow: none;
+  font-size: 12px;
+  padding: 8px 14px;
+}
+.btn-ghost:hover { color: var(--text); border-color: var(--sub); background: #ffffff08; transform: none; box-shadow: none; }
+
+/* ── MARKS TABLE ──────────────────────────────────────── */
+.table-wrap {
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  overflow-x: auto;
+}
+table { border-collapse: collapse; width: 100%; min-width: 380px; }
+thead th {
+  background: #0a1627;
+  color: var(--sub);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  padding: 12px 14px;
+  text-align: left;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--border);
+}
+tbody tr {
+  border-bottom: 1px solid var(--border);
+  transition: background 0.12s;
+}
+tbody tr:last-child { border-bottom: none; }
+tbody tr:hover { background: #ffffff05; }
+td { padding: 9px 14px; vertical-align: middle; }
+td.row-num { font-size: 11px; color: var(--sub2); font-family: 'JetBrains Mono', monospace; width: 36px; }
+td.adm { font-size: 11px; color: var(--sub); font-family: 'JetBrains Mono', monospace; }
+td.learner-name { font-size: 13px; font-weight: 600; color: var(--text); }
+td.level-cell { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700; }
+
+/* ── MARK INPUT ───────────────────────────────────────── */
+.mark-input {
+  width: 76px;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 7px 10px;
+  border-radius: 6px;
+  text-align: center;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.mark-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+.mark-input:disabled { opacity: 0.35; background: #ffffff08; cursor: not-allowed; }
+.mark-input.valid-ee1 { border-color: #10b981; color: #10b981; background: #10b98110; }
+.mark-input.valid-ee2 { border-color: #34d399; color: #34d399; background: #34d39910; }
+.mark-input.valid-me1 { border-color: #3b82f6; color: #3b82f6; background: #3b82f610; }
+.mark-input.valid-me2 { border-color: #60a5fa; color: #60a5fa; background: #60a5fa10; }
+.mark-input.valid-ae1 { border-color: #f59e0b; color: #f59e0b; background: #f59e0b10; }
+.mark-input.valid-ae2 { border-color: #f97316; color: #f97316; background: #f9731610; }
+.mark-input.valid-be1 { border-color: #ef4444; color: #ef4444; background: #ef444410; }
+.mark-input.valid-be2 { border-color: #dc2626; color: #dc2626; background: #dc262610; }
+.mark-input.invalid { border-color: var(--red); color: var(--red); background: #ef444415; box-shadow: 0 0 0 3px #ef444422; }
+.absent-check { width: 18px; height: 18px; accent-color: var(--red); cursor: pointer; }
+
+/* ── PROGRESS ─────────────────────────────────────────── */
+.progress-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.progress-info { display: flex; align-items: center; gap: 10px; }
+.progress-label { font-size: 12px; color: var(--sub); font-weight: 500; }
+.progress-pct { font-size: 13px; font-weight: 700; color: var(--accent2); font-family: 'JetBrains Mono', monospace; }
+.progress-track {
+  background: var(--surface);
+  border-radius: 20px;
+  height: 4px;
+  overflow: hidden;
+  margin-bottom: 16px;
+  border: 1px solid var(--border);
+}
+.progress-fill {
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  height: 100%;
+  border-radius: 20px;
+  transition: width 0.35s ease;
+  box-shadow: 0 0 8px var(--accent2);
+}
+
+/* ── CBC LEGEND ───────────────────────────────────────── */
+.legend-wrap { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+.lv-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 4px;
+  color: #fff;
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 0.3px;
+  opacity: 0.9;
+}
+
+/* ── SAVE BAR ─────────────────────────────────────────── */
+.save-bar {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: rgba(11,22,39,0.97);
+  backdrop-filter: blur(20px);
+  border-top: 1px solid var(--border);
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  z-index: 300;
+  box-shadow: 0 -4px 30px #00000055;
+}
+.save-status {
+  flex: 1;
+  font-size: 12px;
+  color: var(--sub);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.last-saved { color: var(--accent3); font-weight: 600; font-size: 11px; }
+
+/* ── TOAST ────────────────────────────────────────────── */
+#toast {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--green);
+  color: #fff;
+  font-weight: 700;
+  font-size: 13px;
+  padding: 12px 24px;
+  border-radius: 30px;
+  box-shadow: 0 4px 30px #10b98155;
+  transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  z-index: 999;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+}
+#toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+#toast.error { background: var(--red); box-shadow: 0 4px 30px #ef444455; }
+
+/* ── SPINNER ──────────────────────────────────────────── */
+.spinner-wrap { padding: 30px; text-align: center; }
+.spinner {
+  width: 32px; height: 32px;
+  border: 2px solid var(--border2);
+  border-top-color: var(--accent2);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  margin: 0 auto 10px;
+}
+.spinner-text { font-size: 12px; color: var(--sub); }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.empty-state { padding: 40px; text-align: center; color: var(--sub); font-size: 13px; }
+
+/* ── MARKS HEADER ROW ─────────────────────────────────── */
+.marks-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+.meta-tag {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 4px;
+  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--sub);
+  font-family: 'JetBrains Mono', monospace;
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="logo-badge"><div class="logo-dot"></div>iQ</div>
+  <span class="title">Remote Marks Entry</span>
+  <span class="school-name" id="schoolName"></span>
+  <div class="header-right">
+    <div class="status-pill"><div class="status-dot"></div>ONLINE</div>
+  </div>
+</header>
+
+<!-- SECTION TABS -->
+<div class="tabs-wrap">
+  <div class="tabs">
+    <button class="tab-btn active" data-sec="junior" onclick="setSection('junior',this)">
+      <span class="tab-icon">🎓</span>Junior Secondary
+    </button>
+    <button class="tab-btn" data-sec="upper" onclick="setSection('upper',this)">
+      <span class="tab-icon">📘</span>Upper Primary
+    </button>
+    <button class="tab-btn" data-sec="lower" onclick="setSection('lower',this)">
+      <span class="tab-icon">📗</span>Lower Primary
+    </button>
+    <button class="tab-btn" data-sec="preprimary" onclick="setSection('preprimary',this)">
+      <span class="tab-icon">🌱</span>Pre-Primary
+    </button>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- Session Setup Card -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">
+        <div class="card-title-icon">📋</div>
+        Session Setup
+      </div>
+    </div>
+    <div class="fields-grid">
+      <div class="field">
+        <label>Class</label>
+        <select id="clsSelect" onchange="onClassChange()">
+          <option value="">— Select class —</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Term</label>
+        <select id="termSelect">
+          <option>Term 1</option>
+          <option>Term 2</option>
+          <option>Term 3</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Year</label>
+        <input type="text" id="yearInput" placeholder="2025">
+      </div>
+      <div class="field">
+        <label>Assessment Type</label>
+        <select id="typeSelect" onchange="onTypeChange()">
+          <option>End of Term</option>
+          <option>Mid-Term</option>
+          <option>CATS</option>
+          <option>Mock</option>
+          <option>KJSEA</option>
+          <option>Series</option>
+        </select>
+      </div>
+      <div class="field" id="seriesRow" style="display:none">
+        <label>Series Exam</label>
+        <select id="seriesSelect">
+          <option value="">— Select series —</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Subject Selection -->
+  <div class="card" id="subjCard" style="display:none">
+    <div class="card-header">
+      <div class="card-title">
+        <div class="card-title-icon">📚</div>
+        Select Subject
+      </div>
+      <button class="btn btn-teal" onclick="loadMarks()">Load Learners →</button>
+    </div>
+    <div class="chips-wrap" id="subjChips"></div>
+  </div>
+
+  <!-- Marks Entry -->
+  <div class="card" id="marksCard" style="display:none">
+    <div class="card-header">
+      <div class="card-title">
+        <div class="card-title-icon">✏️</div>
+        <span id="marksTitle">Enter Marks</span>
+      </div>
+      <button class="btn-ghost btn" onclick="clearAll()">↺ Clear all</button>
+    </div>
+
+    <div class="legend-wrap" id="levelLegend"></div>
+
+    <div class="marks-meta" id="marksMeta"></div>
+
+    <div class="progress-row">
+      <div class="progress-info">
+        <span class="progress-label" id="progressLabel">0 / 0 filled</span>
+        <span class="progress-pct" id="progressPct">0%</span>
+      </div>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="progressBar" style="width:0%"></div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:40px">#</th>
+            <th>Adm No</th>
+            <th>Learner Name</th>
+            <th id="markColHdr">Mark /100</th>
+            <th style="width:60px;text-align:center">Level</th>
+            <th style="width:60px;text-align:center">Absent</th>
+          </tr>
+        </thead>
+        <tbody id="marksBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div><!-- /.main -->
+
+<!-- SAVE BAR -->
+<div class="save-bar" id="saveBar" style="display:none">
+  <div class="save-status">
+    <span id="saveStatus">Ready to save</span>
+    <span class="last-saved" id="lastSaved"></span>
+  </div>
+  <button class="btn btn-green" onclick="saveMarks()" id="saveBtn">💾 Save Marks</button>
+</div>
+
+<div id="toast">Saved!</div>
+
+<script>
+const LEVEL_COLORS={EE1:'#10b981',EE2:'#34d399',ME1:'#3b82f6',ME2:'#60a5fa',AE1:'#f59e0b',AE2:'#f97316',BE1:'#ef4444',BE2:'#dc2626'};
+const LEVELS=__LEVELS__;
+let section='junior',token='__TOKEN__',classes=[],subjects=[],learners=[],activeSubjId=null,maxMark=100;
+
+window.onload=()=>{
+  document.getElementById('yearInput').value=new Date().getFullYear();
+  fetchSchoolName();
+  buildLegend();
+  loadClasses();
+};
+
+async function fetchSchoolName(){
+  try{const r=await api('/api/rmt/school');document.getElementById('schoolName').textContent=r.name||'';}catch(e){}
+}
+
+function buildLegend(){
+  const el=document.getElementById('levelLegend');el.innerHTML='';
+  LEVELS.forEach(lv=>{
+    const b=document.createElement('span');b.className='lv-badge';
+    b.style.background=LEVEL_COLORS[lv.level]||'#555';
+    b.textContent=`${lv.level}  ${lv.min}–${lv.max}%`;
+    el.appendChild(b);
+  });
+}
+
+function setSection(sec,btn){
+  section=sec;
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('clsSelect').value='';
+  document.getElementById('subjCard').style.display='none';
+  document.getElementById('marksCard').style.display='none';
+  document.getElementById('saveBar').style.display='none';
+  loadClasses();
+}
+
+async function loadClasses(){
+  const sel=document.getElementById('clsSelect');
+  sel.innerHTML='<option>Loading…</option>';
+  try{
+    const d=await api(`/api/rmt/classes?section=${section}&token=${token}`);
+    classes=d.classes||[];
+    sel.innerHTML='<option value="">— Select class —</option>';
+    classes.forEach(c=>{
+      const o=document.createElement('option');o.value=c.id;
+      o.textContent=`${c.name}  (${c.grade})`;sel.appendChild(o);
+    });
+  }catch(e){sel.innerHTML='<option>Error loading classes</option>';}
+}
+
+async function onClassChange(){
+  const cls_id=document.getElementById('clsSelect').value;
+  if(!cls_id){document.getElementById('subjCard').style.display='none';document.getElementById('marksCard').style.display='none';document.getElementById('saveBar').style.display='none';return;}
+  const cls=classes.find(c=>String(c.id)===cls_id);if(!cls)return;
+  try{
+    const d=await api(`/api/rmt/subjects?grade=${encodeURIComponent(cls.grade)}&token=${token}`);
+    subjects=d.subjects||[];renderSubjectChips();
+    document.getElementById('subjCard').style.display='block';
+    document.getElementById('marksCard').style.display='none';
+    document.getElementById('saveBar').style.display='none';
+  }catch(e){toast('Error loading subjects',true);}
+  // Refresh series list if type=Series
+  if(document.getElementById('typeSelect').value==='Series') await loadSeriesList();
+}
+
+function renderSubjectChips(){
+  const wrap=document.getElementById('subjChips');wrap.innerHTML='';activeSubjId=null;
+  subjects.forEach(s=>{
+    const chip=document.createElement('div');chip.className='chip';
+    chip.innerHTML=`<strong>${s.code}</strong> — ${s.name}`;
+    chip.dataset.id=s.id;
+    chip.onclick=()=>{
+      document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+      chip.classList.add('active');activeSubjId=s.id;maxMark=s.max_marks||100;
+      document.getElementById('markColHdr').textContent=`Mark /${s.max_marks||100}`;
+    };
+    wrap.appendChild(chip);
+  });
+}
+
+async function onTypeChange(){
+  const atype=document.getElementById('typeSelect').value;
+  const seriesRow=document.getElementById('seriesRow');
+  if(atype==='Series'){
+    seriesRow.style.display='';
+    await loadSeriesList();
+  } else {
+    seriesRow.style.display='none';
+  }
+}
+
+async function loadSeriesList(){
+  const cls_id=document.getElementById('clsSelect').value;
+  const term=document.getElementById('termSelect').value;
+  const year=document.getElementById('yearInput').value.trim();
+  const sel=document.getElementById('seriesSelect');
+  sel.innerHTML='<option value="">Loading…</option>';
+  if(!cls_id||!term||!year){sel.innerHTML='<option value="">— Select class/term/year first —</option>';return;}
+  try{
+    const d=await api(`/api/rmt/series?cls=${cls_id}&term=${encodeURIComponent(term)}&year=${year}&token=${token}`);
+    sel.innerHTML='<option value="">— Select series —</option>';
+    (d.series||[]).forEach(s=>{
+      const o=document.createElement('option');o.value=s.id;o.textContent=s.name;sel.appendChild(o);
+    });
+    if(!d.series||!d.series.length) sel.innerHTML='<option value="">No series registered for this class/term</option>';
+  }catch(e){sel.innerHTML='<option value="">Error loading series</option>';}
+}
+
+async function loadMarks(){
+  if(!activeSubjId){toast('Please select a subject first',true);return;}
+  const cls_id=document.getElementById('clsSelect').value;
+  const term=document.getElementById('termSelect').value;
+  const year=document.getElementById('yearInput').value.trim();
+  const atype=document.getElementById('typeSelect').value;
+  const series_id=document.getElementById('seriesSelect').value;
+  const subj=subjects.find(s=>String(s.id)===String(activeSubjId));
+  const cls=classes.find(c=>String(c.id)===cls_id);
+
+  // Validate series selection when type=Series
+  if(atype==='Series'&&!series_id){toast('Please select a Series exam first',true);return;}
+
+  document.getElementById('marksCard').style.display='block';
+  document.getElementById('saveBar').style.display='flex';
+  document.getElementById('marksTitle').textContent=`${subj?subj.name:'Marks'}`;
+
+  // update meta tags
+  const meta=document.getElementById('marksMeta');
+  meta.innerHTML='';
+  const seriesName=atype==='Series'?document.getElementById('seriesSelect').options[document.getElementById('seriesSelect').selectedIndex]?.text:'';
+  [[cls?cls.name:'',true],[term,false],[year,false],[atype==='Series'?(seriesName||atype):atype,false]].forEach(([t,bold])=>{
+    if(!t)return;
+    const tag=document.createElement('span');tag.className='meta-tag';
+    tag.textContent=t;if(bold)tag.style.color='var(--text)';
+    meta.appendChild(tag);
+  });
+
+  document.getElementById('marksBody').innerHTML=`<tr><td colspan="6"><div class="spinner-wrap"><div class="spinner"></div><div class="spinner-text">Loading learners…</div></div></td></tr>`;
+  try{
+    let url=`/api/rmt/marks?cls=${cls_id}&subj=${activeSubjId}&term=${encodeURIComponent(term)}&year=${year}&type=${encodeURIComponent(atype)}&token=${token}`;
+    if(atype==='Series'&&series_id) url+=`&series_id=${series_id}`;
+    let resp;
+    try{ resp=await fetch(url); }catch(e){ toast('Network error — check connection',true); document.getElementById('marksBody').innerHTML='<tr><td colspan="6"><div class="empty-state" style="color:var(--red)">Network error. Check your connection.</div></td></tr>'; return; }
+    if(!resp.ok){
+      let errMsg='Error loading learners';
+      try{ const j=await resp.json(); if(j&&j.message) errMsg=j.message; }catch(e){}
+      // Show a locked state in the table instead of a blank card
+      document.getElementById('marksBody').innerHTML=`<tr><td colspan="6"><div class="empty-state" style="color:var(--red);padding:24px 0">
+        <div style="font-size:1.4rem;margin-bottom:8px">🔒</div>
+        <div style="font-weight:600;margin-bottom:6px">Exam Not Registered</div>
+        <div style="font-size:0.85rem;color:var(--subtext)">${errMsg}</div>
+      </div></td></tr>`;
+      document.getElementById('saveBar').style.display='none';
+      toast(errMsg,true);
+      return;
+    }
+    const d=await resp.json();
+    learners=d.learners||[];
+    learners.sort((a,b)=>a.name.localeCompare(b.name));
+    renderMarksTable(d.existing||{});
+    updateProgress();
+  }catch(e){toast('Error loading learners: '+e.message,true);}
+}
+
+function getLevelKey(v){const pct=Math.round((v/maxMark)*100);for(const lv of LEVELS){if(pct>=lv.min&&pct<=lv.max)return lv.level;}return null;}
+
+function renderMarksTable(existing){
+  const tbody=document.getElementById('marksBody');tbody.innerHTML='';
+  if(!learners.length){tbody.innerHTML='<tr><td colspan="6"><div class="empty-state">No active learners in this class.</div></td></tr>';return;}
+  learners.forEach((lrn,idx)=>{
+    const ex=existing[String(lrn.id)]||{},isAbsent=ex.is_absent;
+    const mark=isAbsent?'':(ex.marks!==undefined&&ex.marks!==null?ex.marks:'');
+    const lv=mark!==''?getLevelKey(parseFloat(mark)):null;
+    const lvColor=lv?LEVEL_COLORS[lv]||'#555':'';
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td class="row-num">${idx+1}</td>
+      <td class="adm">${lrn.admission_no}</td>
+      <td class="learner-name">${lrn.name}</td>
+      <td><input type="number" class="mark-input${isAbsent?' disabled':''}" id="m_${lrn.id}" min="0" max="${maxMark}" step="0.5" value="${mark}" placeholder="—" ${isAbsent?'disabled':''} oninput="onMarkInput(this,${lrn.id})" onkeydown="markKeyNav(event,${idx})"></td>
+      <td class="level-cell" id="lv_${lrn.id}" style="color:${lvColor};text-align:center">${lv||''}</td>
+      <td style="text-align:center"><input type="checkbox" class="absent-check" id="ab_${lrn.id}" ${isAbsent?'checked':''} onchange="onAbsent(this,${lrn.id})"></td>
+    `;
+    tbody.appendChild(tr);
+    if(mark!=='')classifyInput(document.getElementById(`m_${lrn.id}`),parseFloat(mark));
+  });
+}
+
+function onMarkInput(inp,lid){
+  const v=parseFloat(inp.value);classifyInput(inp,v);
+  const lv=getLevelKey(v);
+  const lvEl=document.getElementById(`lv_${lid}`);
+  if(lvEl){lvEl.textContent=lv||'';lvEl.style.color=lv?LEVEL_COLORS[lv]||'#555':'';}
+  updateProgress();
+}
+
+function classifyInput(inp,v){
+  inp.classList.remove('invalid',...Object.keys(LEVEL_COLORS).map(k=>'valid-'+k.toLowerCase()));
+  if(isNaN(v)||inp.value.trim()==='')return;
+  if(v<0||v>maxMark){inp.classList.add('invalid');return;}
+  const lv=getLevelKey(v);if(lv)inp.classList.add('valid-'+lv.toLowerCase());
+}
+
+function onAbsent(chk,lid){
+  const inp=document.getElementById(`m_${lid}`);
+  const lvEl=document.getElementById(`lv_${lid}`);
+  inp.disabled=chk.checked;
+  if(chk.checked){
+    inp.value='';
+    inp.classList.remove(...Object.keys(LEVEL_COLORS).map(k=>'valid-'+k.toLowerCase()),'invalid');
+    if(lvEl){lvEl.textContent='AB';lvEl.style.color='var(--red)';}
+  }else{
+    if(lvEl){lvEl.textContent='';lvEl.style.color='';}
+  }
+  updateProgress();
+}
+
+function markKeyNav(e,rowIdx){
+  if(e.key==='Enter'||e.key==='Tab'){
+    e.preventDefault();
+    const next=document.getElementById(`m_${(learners[rowIdx+1]||{}).id}`);
+    if(next&&!next.disabled)next.focus();
+  }
+}
+
+function clearAll(){
+  learners.forEach(lrn=>{
+    const inp=document.getElementById(`m_${lrn.id}`),chk=document.getElementById(`ab_${lrn.id}`),lvEl=document.getElementById(`lv_${lrn.id}`);
+    if(inp){inp.value='';inp.disabled=false;inp.classList.remove(...Object.keys(LEVEL_COLORS).map(k=>'valid-'+k.toLowerCase()),'invalid');}
+    if(chk)chk.checked=false;
+    if(lvEl){lvEl.textContent='';lvEl.style.color='';}
+  });
+  updateProgress();
+}
+
+function updateProgress(){
+  let filled=0;
+  learners.forEach(lrn=>{
+    const inp=document.getElementById(`m_${lrn.id}`),chk=document.getElementById(`ab_${lrn.id}`);
+    if(chk&&chk.checked)filled++;
+    else if(inp&&inp.value.trim()!=='')filled++;
+  });
+  const total=learners.length,pct=total?Math.round(filled/total*100):0;
+  document.getElementById('progressLabel').textContent=`${filled} / ${total} filled`;
+  document.getElementById('progressPct').textContent=`${pct}%`;
+  document.getElementById('progressBar').style.width=pct+'%';
+}
+
+async function saveMarks(){
+  const cls_id=document.getElementById('clsSelect').value;
+  const term=document.getElementById('termSelect').value;
+  const year=document.getElementById('yearInput').value.trim();
+  const atype=document.getElementById('typeSelect').value;
+  const series_id=atype==='Series'?document.getElementById('seriesSelect').value:null;
+  const entries=learners.map(lrn=>{
+    const inp=document.getElementById(`m_${lrn.id}`),chk=document.getElementById(`ab_${lrn.id}`);
+    if(chk&&chk.checked)return{learner_id:lrn.id,is_absent:true};
+    return{learner_id:lrn.id,marks:inp?inp.value.trim():'',is_absent:false};
+  });
+  const btn=document.getElementById('saveBtn');
+  btn.disabled=true;btn.innerHTML='⏳ Saving…';
+  try{
+    const payload={cls_id,subj_id:activeSubjId,term,year,atype,token,entries};
+    if(atype==='Series'&&series_id) payload.series_id=parseInt(series_id);
+    const resp=await fetch('/api/rmt/save',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    if(!resp.ok){
+      let errMsg='Save failed — check connection';
+      try{const errData=await resp.json();if(errData&&errData.message)errMsg='❌ '+errData.message;}catch(_){}
+      toast(errMsg,true);return;
+    }
+    const r=await resp.json();
+    toast(`✅ ${r.saved} saved · ${r.absent} absent${r.skipped?` · ${r.skipped} skipped`:''}`);
+    const now=new Date().toLocaleTimeString();
+    document.getElementById('lastSaved').textContent=`Saved at ${now}`;
+    document.getElementById('saveStatus').textContent='All changes saved';
+  }catch(e){toast('Save failed — check connection',true);}
+  finally{btn.disabled=false;btn.innerHTML='💾 Save Marks';}
+}
+
+async function api(url,opts={}){
+  const r=await fetch(url,opts);
+  if(!r.ok)throw new Error(await r.text());
+  return r.json();
+}
+
+let _tt;
+function toast(msg,err=false){
+  const el=document.getElementById('toast');
+  el.textContent=msg;
+  el.classList.toggle('error',err);
+  el.classList.add('show');
+  clearTimeout(_tt);
+  _tt=setTimeout(()=>el.classList.remove('show'),3500);
+}
+</script>
+</body>
+</html>
