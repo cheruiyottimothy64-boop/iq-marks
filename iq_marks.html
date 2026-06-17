@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>iQ — Remote Marks Entry</title>
+<style>
+/* Fonts: system stack used (data: URI context blocks external @import) */
+:root{--navy:#0a1628;--card:#0e2240;--panel:#132d52;--accent:#1e90ff;--accent2:#00d4aa;--text:#e8f0fe;--sub:#7a9bbf;--border:#1e3a5a;--green:#00c875;--red:#ff4d5e;--yellow:#ffc93c;--radius:10px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--navy);color:var(--text);font-family:'Outfit',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;min-height:100vh;padding-bottom:80px}
+header{background:linear-gradient(135deg,#0a1e3d,#0d2a52);border-bottom:1px solid var(--border);padding:14px 20px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100;box-shadow:0 2px 16px #00000066}
+.logo-pill{background:var(--accent);color:var(--navy);font-weight:700;font-size:13px;padding:4px 10px;border-radius:6px;letter-spacing:1px}
+header h1{font-size:15px;font-weight:600}
+.cloud-badge{margin-left:auto;background:#00c87522;border:1px solid #00c875;color:#00c875;font-size:10px;font-weight:700;padding:3px 8px;border-radius:4px;letter-spacing:.5px}
+.section-tabs{display:flex;gap:8px;padding:16px 20px 0;overflow-x:auto;scrollbar-width:none}
+.tab-btn{background:var(--card);border:1.5px solid var(--border);color:var(--sub);font-family:'Outfit',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:13px;font-weight:600;padding:9px 18px;border-radius:8px;cursor:pointer;white-space:nowrap;transition:all .2s}
+.tab-btn.active{background:var(--accent);border-color:var(--accent);color:var(--navy)}
+.main{padding:16px 20px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:14px}
+.card-title{font-size:13px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.field{display:flex;flex-direction:column;gap:5px;flex:1;min-width:130px}
+label{font-size:12px;color:var(--sub);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+select,input[type=text],input[type=number]{background:var(--navy);border:1.5px solid var(--border);color:var(--text);font-family:'Outfit',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:14px;padding:9px 12px;border-radius:7px;outline:none;width:100%;-webkit-appearance:none}
+select:focus,input:focus{border-color:var(--accent)}
+select option{background:var(--card)}
+.btn{display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:var(--navy);border:none;font-family:'Outfit',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:14px;font-weight:700;padding:11px 22px;border-radius:8px;cursor:pointer;transition:opacity .15s,transform .1s}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn-green{background:var(--green)}
+.btn-sm{font-size:12px;padding:7px 14px}
+.subj-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.chip{background:var(--panel);border:1.5px solid var(--border);color:var(--sub);font-size:12px;font-weight:600;padding:6px 12px;border-radius:20px;cursor:pointer;transition:all .2s}
+.chip.active{background:var(--accent2);border-color:var(--accent2);color:var(--navy)}
+.marks-table-wrap{overflow-x:auto;border-radius:8px;border:1px solid var(--border)}
+table{border-collapse:collapse;width:100%;min-width:340px}
+thead th{background:#0d2844;color:var(--accent);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;padding:10px;text-align:left;white-space:nowrap;border-bottom:1px solid var(--border)}
+tbody tr{border-bottom:1px solid var(--border)}
+tbody tr:nth-child(even){background:#0c1e38}
+td{padding:8px 10px;vertical-align:middle}
+td.learner-name{font-size:13px;font-weight:600}
+td.adm{font-size:11px;color:var(--sub);font-family:'DM Mono','Courier New',monospace}
+.mark-input{width:72px;background:var(--navy);border:1.5px solid var(--border);color:var(--text);font-family:'DM Mono','Courier New',monospace;font-size:14px;padding:6px 8px;border-radius:6px;text-align:center;outline:none}
+.mark-input.invalid{border-color:var(--red);background:#3a1015}
+.absent-check{width:18px;height:18px;accent-color:var(--red);cursor:pointer}
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--green);color:var(--navy);font-weight:700;font-size:14px;padding:12px 24px;border-radius:30px;box-shadow:0 4px 24px #00000077;transition:transform .3s cubic-bezier(.34,1.56,.64,1);z-index:999;white-space:nowrap}
+#toast.show{transform:translateX(-50%) translateY(0)}
+#toast.error{background:var(--red);color:#fff}
+.spinner{width:28px;height:28px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;margin:20px auto}
+@keyframes spin{to{transform:rotate(360deg)}}
+.legend{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.lv-badge{font-size:11px;font-weight:700;padding:4px 9px;border-radius:4px;color:#fff;font-family:'DM Mono','Courier New',monospace}
+.save-bar{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--border);padding:12px 20px;display:flex;align-items:center;gap:12px;z-index:200}
+.progress-bar-wrap{background:var(--border);border-radius:20px;height:6px;overflow:hidden;margin-top:4px}
+.progress-bar{background:linear-gradient(90deg,var(--accent),var(--accent2));height:100%;border-radius:20px;transition:width .3s}
+.setup-card{max-width:480px;margin:60px auto;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:32px}
+.setup-card h2{color:var(--accent);margin-bottom:8px}
+.setup-card p{color:var(--sub);font-size:14px;margin-bottom:20px}
+.setup-input{width:100%;background:var(--navy);border:1.5px solid var(--border);color:var(--text);font-family:'DM Mono','Courier New',monospace;font-size:13px;padding:10px 12px;border-radius:7px;outline:none;margin-bottom:12px}
+.setup-input:focus{border-color:var(--accent)}
+</style>
+</head>
+<body>
+<div id="setupScreen" style="display:none">
+  <div class="setup-card">
+    <h2>⚙️ iQ Cloud Setup</h2>
+    <p>This device needs the Supabase credentials to connect. Ask your admin for these details.</p>
+    <input class="setup-input" id="setupUrl" placeholder="Supabase Project URL  e.g. https://xxxx.supabase.co">
+    <input class="setup-input" id="setupKey" placeholder="Supabase anon key (long string)">
+    <input class="setup-input" id="setupSection" placeholder="Your section: junior / upper / lower / preprimary">
+    <button class="btn" style="width:100%" onclick="saveSetup()">Save & Connect</button>
+    <p id="setupErr" style="color:var(--red);margin-top:10px;font-size:12px"></p>
+  </div>
+</div>
+<div id="appScreen" style="display:none">
+<header>
+  <span class="logo-pill">iQ</span>
+  <h1>Remote Marks Entry</h1>
+  <span class="cloud-badge">☁ CLOUD</span>
+  <span style="margin-left:8px;font-size:12px;color:var(--sub)" id="schoolName"></span>
+</header>
+<div class="section-tabs" id="sectionTabs">
+  <button class="tab-btn active" data-sec="junior"     onclick="setSection('junior',this)">🎓 Junior (Gr 7-9)</button>
+  <button class="tab-btn"        data-sec="upper"      onclick="setSection('upper',this)">📘 Upper Primary (Gr 4-6)</button>
+  <button class="tab-btn"        data-sec="lower"      onclick="setSection('lower',this)">📗 Lower Primary (Gr 1-3)</button>
+  <button class="tab-btn"        data-sec="preprimary" onclick="setSection('preprimary',this)">🌱 Pre-Primary</button>
+</div>
+<div class="main">
+  <div class="card">
+    <div class="card-title">📋 Session Setup</div>
+    <div class="row">
+      <div class="field"><label>Class</label><select id="clsSelect" onchange="onClassChange()"><option value="">— Select class —</option></select></div>
+      <div class="field"><label>Term</label><select id="termSelect"><option>Term 1</option><option>Term 2</option><option>Term 3</option></select></div>
+      <div class="field"><label>Year</label><input type="text" id="yearInput" value="" placeholder="2025" style="width:90px"></div>
+      <div class="field"><label>Type</label><select id="typeSelect" onchange="onTypeChange()"><option>End of Term</option><option>Mid-Term</option><option>CATS</option><option>Mock</option><option>KJSEA</option><option>KCPE</option><option>Assignment</option><option>Series</option></select></div>
+      <div class="field" id="seriesRow" style="display:none"><label>Series Exam</label><select id="seriesSelect"><option value="">— Select series —</option></select></div>
+    </div>
+  </div>
+  <div class="card" id="subjCard" style="display:none">
+    <div class="card-title">📚 Select Subject</div>
+    <div class="subj-chips" id="subjChips"></div>
+    <button class="btn" onclick="loadMarks()">▶ Load Learners</button>
+  </div>
+  <div class="card" id="marksCard" style="display:none">
+    <div class="card-title" id="marksTitle">✏️ Enter Marks</div>
+    <div class="legend" id="levelLegend"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <span style="font-size:12px;color:var(--sub)" id="progressLabel">0 / 0 filled</span>
+      <button class="btn btn-sm" onclick="clearAll()">🗑 Clear all</button>
+    </div>
+    <div class="progress-bar-wrap" style="margin-bottom:14px"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
+    <div class="marks-table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Adm No</th><th>Learner</th><th id="markColHdr">Mark</th><th>Absent</th></tr></thead>
+        <tbody id="marksBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<div class="save-bar" id="saveBar" style="display:none">
+  <span id="saveStatus">Ready to save</span>
+  <button class="btn btn-green" onclick="saveMarks()" id="saveBtn">💾 Save Marks</button>
+</div>
+</div>
+<div id="toast">Saved!</div>
+<script>
+// ── Config stored in localStorage ────────────────────────────────────────────
+const CFG_KEY='iq_cloud_cfg';
+let SB_URL='',SB_KEY='',section='junior',classes=[],subjects=[],learners=[],activeSubjId=null,maxMark=100;
+
+const DEFAULT_LEVELS=[
+  {level:"EE1",min:90,  max:100,  points:8},{level:"EE2",min:75,max:89.99,points:7},
+  {level:"ME1",min:58,  max:74.99,points:6},{level:"ME2",min:41,max:57.99,points:5},
+  {level:"AE1",min:31,  max:40.99,points:4},{level:"AE2",min:21,max:30.99,points:3},
+  {level:"BE1",min:11,  max:20.99,points:2},{level:"BE2",min:0, max:10.99,points:1},
+];
+const LEVEL_COLORS={EE1:'#00c875',EE2:'#22b573',ME1:'#3b82f6',ME2:'#60a5fa',AE1:'#f59e0b',AE2:'#f97316',BE1:'#ef4444',BE2:'#b91c1c'};
+let LEVELS=DEFAULT_LEVELS;
+
+// ── Supabase REST helpers ─────────────────────────────────────────────────────
+const sbHeaders=()=>({'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=representation'});
+async function sbSelect(table,params='select=*'){
+  const r=await fetch(`${SB_URL}/rest/v1/${table}?${params}`,{headers:sbHeaders()});
+  if(!r.ok)throw new Error(await r.text());return r.json();
+}
+async function sbUpsert(table,rows,conflict=''){
+  const url=conflict?`${SB_URL}/rest/v1/${table}?on_conflict=${conflict}`:`${SB_URL}/rest/v1/${table}`;
+  const r=await fetch(url,{
+    method:'POST',
+    headers:{...sbHeaders(),'Prefer':'resolution=merge-duplicates,return=representation'},
+    body:JSON.stringify(rows)
+  });
+  if(!r.ok)throw new Error(await r.text());return r.json();
+}
+
+// ── Boot ──────────────────────────────────────────────────────────────────────
+function _lsGet(k){try{return localStorage.getItem(k)}catch(e){return null}}
+function _lsSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+window.onload=()=>{
+  document.getElementById('yearInput').value=new Date().getFullYear();
+  // Priority 1: URL params (GitHub Pages teacher link)
+  const p=new URLSearchParams(location.search);
+  const pu=p.get('url'),pk=p.get('key'),ps=p.get('s');
+  if(pu&&pk){SB_URL=pu;SB_KEY=pk;section=ps||'junior';_lsSet(CFG_KEY,JSON.stringify({url:pu,key:pk,section}));boot();return;}
+  // Priority 2: baked-in credentials (data: URI links)
+  if(SB_URL&&SB_KEY){boot();return;}
+  // Priority 3: localStorage (returning teacher)
+  const saved=_lsGet(CFG_KEY);
+  if(saved){try{const c=JSON.parse(saved);SB_URL=c.url||'';SB_KEY=c.key||'';section=c.section||'junior';if(SB_URL&&SB_KEY){boot();return;}}catch(e){}}
+  document.getElementById('setupScreen').style.display='block';
+};
+
+function saveSetup(){
+  SB_URL=document.getElementById('setupUrl').value.trim().replace(/\/$/,'');
+  SB_KEY=document.getElementById('setupKey').value.trim();
+  section=document.getElementById('setupSection').value.trim()||'junior';
+  if(!SB_URL||!SB_KEY){document.getElementById('setupErr').textContent='Both fields required.';return;}
+  _lsSet(CFG_KEY,JSON.stringify({url:SB_URL,key:SB_KEY,section}));
+  boot();
+}
+
+async function boot(){
+  document.getElementById('setupScreen').style.display='none';
+  document.getElementById('appScreen').style.display='block';
+  // Activate the correct tab
+  document.querySelectorAll('.tab-btn').forEach(b=>{
+    b.classList.toggle('active',b.dataset.sec===section);
+  });
+  // Load school name + CBC levels from cloud config
+  try{
+    const cfg=await sbSelect('iq_config','select=key,value');
+    cfg.forEach(r=>{
+      if(r.key==='school_name')document.getElementById('schoolName').textContent=r.value;
+      if(r.key==='cbc_levels')try{LEVELS=JSON.parse(r.value)}catch(e){}
+    });
+  }catch(e){}
+  buildLegend();
+  loadClasses();
+}
+
+function buildLegend(){
+  const el=document.getElementById('levelLegend');el.innerHTML='';
+  LEVELS.forEach(lv=>{
+    const b=document.createElement('span');b.className='lv-badge';
+    b.style.background=LEVEL_COLORS[lv.level]||'#555';
+    b.textContent=`${lv.level} ${lv.min}-${lv.max}%`;el.appendChild(b);
+  });
+}
+
+function setSection(sec,btn){
+  section=sec;
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('clsSelect').value='';
+  document.getElementById('subjCard').style.display='none';
+  document.getElementById('marksCard').style.display='none';
+  document.getElementById('saveBar').style.display='none';
+  loadClasses();
+}
+
+function gradeSection(g){
+  const g2=g.toLowerCase().replace(/[\s-]/g,'');
+  if(['pp1','pp2','nursery','preprimary1','preprimary2'].includes(g2))return 'preprimary';
+  const n=parseInt(g2.replace('grade',''));
+  if(n>=1&&n<=3)return 'lower';
+  if(n>=4&&n<=6)return 'upper';
+  return 'junior';
+}
+
+async function loadClasses(){
+  const sel=document.getElementById('clsSelect');
+  sel.innerHTML='<option>Loading…</option>';
+  try{
+    const data=await sbSelect('iq_classes','select=id,name,grade&order=name.asc');
+    classes=data.filter(c=>gradeSection(c.grade)===section);
+    sel.innerHTML='<option value="">— Select class —</option>';
+    classes.forEach(c=>{
+      const o=document.createElement('option');o.value=c.id;
+      o.textContent=`${c.name} (${c.grade})`;sel.appendChild(o);
+    });
+  }catch(e){sel.innerHTML='<option>Error</option>';toast('Load error: '+e.message,true);}
+}
+
+async function onClassChange(){
+  const cls_id=document.getElementById('clsSelect').value;
+  if(!cls_id){document.getElementById('subjCard').style.display='none';return;}
+  const cls=classes.find(c=>String(c.id)===cls_id);if(!cls)return;
+  try{
+    const sec_k=gradeSection(cls.grade);
+    const data=await sbSelect('iq_subjects',`select=*&section_key=eq.${sec_k}&is_active=eq.true&order=sort_order.asc`);
+    subjects=data;renderSubjectChips();
+    document.getElementById('subjCard').style.display='block';
+    document.getElementById('marksCard').style.display='none';
+    document.getElementById('saveBar').style.display='none';
+  }catch(e){toast('Load subjects error: '+e.message,true);}
+  // Refresh series list if type=Series
+  if(document.getElementById('typeSelect').value==='Series') loadSeriesListCloud();
+}
+
+function renderSubjectChips(){
+  const wrap=document.getElementById('subjChips');wrap.innerHTML='';activeSubjId=null;
+  subjects.forEach(s=>{
+    const chip=document.createElement('div');chip.className='chip';
+    chip.textContent=`${s.code} — ${s.name}`;chip.dataset.id=s.id;
+    chip.onclick=()=>{
+      document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+      chip.classList.add('active');activeSubjId=s.id;maxMark=s.max_marks||100;
+      document.getElementById('markColHdr').textContent=`Mark /${s.max_marks||100}`;
+    };wrap.appendChild(chip);
+  });
+}
+
+function onTypeChange(){
+  const atype=document.getElementById('typeSelect').value;
+  const seriesRow=document.getElementById('seriesRow');
+  seriesRow.style.display=atype==='Series'?'':'none';
+  if(atype==='Series') loadSeriesListCloud();
+}
+
+async function loadSeriesListCloud(){
+  // Cloud version: load series from Supabase iq_exam_series table
+  const cls_id=document.getElementById('clsSelect').value;
+  const term=document.getElementById('termSelect').value;
+  const year=document.getElementById('yearInput').value.trim();
+  const sel=document.getElementById('seriesSelect');
+  sel.innerHTML='<option value="">Loading…</option>';
+  if(!cls_id||!term||!year){sel.innerHTML='<option value="">— Select class/term/year first —</option>';return;}
+  try{
+    // Simple query — Supabase REST does not support subqueries in URL params
+    const rows=await sbSelect('iq_exam_series',
+      `select=id,name&type=eq.Series&term=eq.${encodeURIComponent(term)}&academic_year=eq.${year}&order=name.asc`);
+    sel.innerHTML='<option value="">— Select series —</option>';
+    (rows||[]).forEach(s=>{const o=document.createElement('option');o.value=s.id;o.textContent=s.name;sel.appendChild(o);});
+    if(!rows||!rows.length) sel.innerHTML='<option value="">No series registered for this class/term</option>';
+  }catch(e){sel.innerHTML='<option value="">Error loading series</option>';console.error('Series load error:',e);}
+}
+
+async function loadMarks(){
+  if(!activeSubjId){toast('Select a subject first',true);return;}
+  const cls_id=document.getElementById('clsSelect').value,
+        term=document.getElementById('termSelect').value,
+        year=document.getElementById('yearInput').value.trim(),
+        atype=document.getElementById('typeSelect').value,
+        series_id=document.getElementById('seriesSelect').value,
+        subj=subjects.find(s=>String(s.id)===String(activeSubjId));
+  // Validate series selection
+  if(atype==='Series'&&!series_id){toast('Please select a Series exam first',true);return;}
+  const seriesName=atype==='Series'?document.getElementById('seriesSelect').options[document.getElementById('seriesSelect').selectedIndex]?.text:'';
+  document.getElementById('marksCard').style.display='block';
+  document.getElementById('saveBar').style.display='none';
+  document.getElementById('marksTitle').textContent=`✏️  ${subj.name} — ${atype==='Series'?(seriesName||atype):atype} ${term} ${year}`;
+  document.getElementById('marksBody').innerHTML='<tr><td colspan="5"><div class="spinner"></div></td></tr>';
+  try{
+    // ── EXAM REGISTRATION GATE ─────────────────────────────────────────────
+    // Check that an assessment has been registered for this class/subject/term/year/type
+    // BEFORE fetching or displaying any learners.
+    let aFilter=`select=id&class_id=eq.${cls_id}&subject_id=eq.${activeSubjId}&term=eq.${encodeURIComponent(term)}&academic_year=eq.${year}&type=eq.${encodeURIComponent(atype)}`;
+    if(atype==='Series'&&series_id) aFilter+=`&series_id=eq.${series_id}`;
+    const arows=await sbSelect('iq_assessments',aFilter);
+    if(!arows||!arows.length){
+      learners=[];
+      document.getElementById('marksBody').innerHTML=`<tr><td colspan="5">
+        <div style="text-align:center;padding:32px 16px">
+          <div style="font-size:1.6rem;margin-bottom:8px">🔒</div>
+          <div style="font-weight:700;font-size:1rem;margin-bottom:6px;color:var(--red,#e05252)">Exam Not Registered</div>
+          <div style="font-size:0.85rem;color:var(--sub)">This exam has not been set up for <strong>${subj.name}</strong> in this class.<br>Ask the administrator to register the exam before entering marks.</div>
+        </div>
+      </td></tr>`;
+      toast('Exam not registered — ask admin to set it up first',true);
+      return;
+    }
+    // Exam is registered — fetch learners and existing marks
+    const aid=arows[0].id;
+    const ldata=await sbSelect('iq_learners',
+      `select=id,admission_no,first_name,last_name&class_id=eq.${cls_id}&status=eq.Active&order=first_name.asc`);
+    learners=ldata.map(l=>({...l,name:(l.first_name+' '+l.last_name).toUpperCase()}));
+learners.sort((a,b)=>a.name.localeCompare(b.name));
+    let existing={};
+    try{
+      const rrows=await sbSelect('iq_results',`select=learner_id,marks,is_absent&assessment_id=eq.${aid}`);
+      rrows.forEach(r=>existing[String(r.learner_id)]={marks:r.marks,is_absent:r.is_absent});
+    }catch(e){}
+    renderMarksTable(existing);
+    updateProgress();
+    document.getElementById('saveBar').style.display='flex';
+  }catch(e){toast('Load error: '+e.message,true);}
+}
+
+function getLevelKey(v){
+  const pct=Math.round((v/maxMark)*100);
+  for(const lv of LEVELS)if(pct>=lv.min&&pct<=lv.max)return lv.level;
+  return null;
+}
+function classifyInput(inp,v){
+  inp.classList.remove('invalid',...Object.keys(LEVEL_COLORS).map(k=>'valid-'+k.toLowerCase()));
+  if(isNaN(v))return;
+  if(v<0||v>maxMark){inp.classList.add('invalid');return;}
+  const lv=getLevelKey(v);if(lv)inp.classList.add('valid-'+lv.toLowerCase());
+}
+
+function renderMarksTable(existing){
+  const tbody=document.getElementById('marksBody');tbody.innerHTML='';
+  if(!learners.length){tbody.innerHTML='<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--sub)">No active learners.</td></tr>';return;}
+  learners.forEach((lrn,idx)=>{
+    const ex=existing[String(lrn.id)]||{},isAbsent=ex.is_absent;
+    const mark=isAbsent?'':(ex.marks!=null?ex.marks:'');
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td style="color:var(--sub);font-size:12px">${idx+1}</td>
+      <td class="adm">${lrn.admission_no}</td>
+      <td class="learner-name">${lrn.name}</td>
+      <td><input type="number" class="mark-input" id="m_${lrn.id}" min="0" max="${maxMark}" step="0.5" value="${mark}" placeholder="—" ${isAbsent?'disabled':''} oninput="classifyInput(this,parseFloat(this.value));updateProgress()" onkeydown="markKeyNav(event,${idx})"></td>
+      <td style="text-align:center"><input type="checkbox" class="absent-check" id="ab_${lrn.id}" ${isAbsent?'checked':''} onchange="onAbsent(this,${lrn.id})"></td>`;
+    tbody.appendChild(tr);
+    if(mark!=='')classifyInput(document.getElementById(`m_${lrn.id}`),parseFloat(mark));
+  });
+}
+
+function onAbsent(chk,lid){
+  const inp=document.getElementById(`m_${lid}`);
+  inp.disabled=chk.checked;if(chk.checked){inp.value='';inp.className='mark-input';}
+  updateProgress();
+}
+function markKeyNav(e,i){
+  if(e.key==='Enter'||e.key==='Tab'){e.preventDefault();
+    const n=document.getElementById(`m_${(learners[i+1]||{}).id}`);
+    if(n&&!n.disabled)n.focus();}
+}
+function clearAll(){
+  learners.forEach(l=>{
+    const i=document.getElementById(`m_${l.id}`),c=document.getElementById(`ab_${l.id}`);
+    if(i){i.value='';i.disabled=false;i.className='mark-input';}
+    if(c)c.checked=false;
+  });updateProgress();
+}
+function updateProgress(){
+  let filled=0;
+  learners.forEach(l=>{
+    const i=document.getElementById(`m_${l.id}`),c=document.getElementById(`ab_${l.id}`);
+    if(c&&c.checked)filled++;else if(i&&i.value.trim())filled++;
+  });
+  const t=learners.length,p=t?Math.round(filled/t*100):0;
+  document.getElementById('progressLabel').textContent=`${filled} / ${t} filled`;
+  document.getElementById('progressBar').style.width=p+'%';
+}
+
+async function saveMarks(){
+  const cls_id=parseInt(document.getElementById('clsSelect').value),
+        term=document.getElementById('termSelect').value,
+        year=document.getElementById('yearInput').value.trim(),
+        atype=document.getElementById('typeSelect').value,
+        series_id=atype==='Series'?document.getElementById('seriesSelect').value:null;
+  const btn=document.getElementById('saveBtn');
+  btn.disabled=true;btn.textContent='⏳ Saving…';
+  try{
+    // Ensure assessment exists — for Series, filter by series_id
+    let assFilter=`select=id&class_id=eq.${cls_id}&subject_id=eq.${activeSubjId}&term=eq.${encodeURIComponent(term)}&academic_year=eq.${year}&type=eq.${encodeURIComponent(atype)}`;
+    if(atype==='Series'&&series_id) assFilter+=`&series_id=eq.${series_id}`;
+    const ass_rows=await sbSelect('iq_assessments',assFilter);
+    if(!ass_rows||!ass_rows.length){
+      toast('Exam not registered — ask admin to set it up first',true);return;
+    }
+    const aid=ass_rows[0].id;
+    // Build result rows
+    const today=new Date().toISOString().slice(0,10);
+    const rows=[];
+    learners.forEach(lrn=>{
+      const inp=document.getElementById(`m_${lrn.id}`),chk=document.getElementById(`ab_${lrn.id}`);
+      if(chk&&chk.checked){
+        rows.push({learner_id:lrn.id,assessment_id:aid,marks:null,performance_level:'AB',points:0,is_absent:true,entry_date:today});
+      } else if(inp&&inp.value.trim()!==''){
+        const m=parseFloat(inp.value);
+        if(m>=0&&m<=maxMark){
+          const lv=getLevelKey(m)||'BE2';
+          const pts=LEVELS.find(l=>l.level===lv)?.points||0;
+          rows.push({learner_id:lrn.id,assessment_id:aid,marks:m,performance_level:lv,points:pts,is_absent:false,entry_date:today});
+        }
+      }
+    });
+    if(!rows.length){toast('No marks to save',true);return;}
+    await sbUpsert('iq_results',rows,'learner_id,assessment_id');
+    toast(`✅ Saved ${rows.filter(r=>!r.is_absent).length} marks, ${rows.filter(r=>r.is_absent).length} absent`);
+    document.getElementById('saveStatus').textContent=`Last saved: ${new Date().toLocaleTimeString()}`;
+  }catch(e){toast('Save failed: '+e.message,true);}
+  finally{btn.disabled=false;btn.textContent='💾 Save Marks';}
+}
+
+let _tt;
+function toast(msg,err=false){
+  const el=document.getElementById('toast');el.textContent=msg;
+  el.classList.toggle('error',err);el.classList.add('show');
+  clearTimeout(_tt);_tt=setTimeout(()=>el.classList.remove('show'),3000);
+}
+</script>
+</body>
+</html>
